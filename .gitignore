@@ -8,6 +8,7 @@ __pycache__/
 
 src/imagery
 src/myimagery
+src/gee_asset_manager
 
 # Distribution / packaging
 .Python
