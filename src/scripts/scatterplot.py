@@ -21,16 +21,16 @@ def main():
     Usage:
 ------------------------------------------------
 
-python %s [OPTIONS] filename1 filename2 band1 band2
-    
 Display a scatterplot   
-    
+
+python %s [OPTIONS] filename1 filename2 band1 band2
+      
 Options:
 
-   -h      this help
-   -d dims, spatial subset
-   -n samples (default 10000)
-   -s filename, save as eps to file ''' %sys.argv[0]
+   -h          this help
+   -d <list>   spatial subset
+   -n <int>    samples (default 10000)
+   -s <string> save in eps format ''' %sys.argv[0]
    
     options, args = getopt.getopt(sys.argv[1:],'hd:s:')  
     dims = None

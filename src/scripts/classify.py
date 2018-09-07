@@ -17,21 +17,33 @@ import numpy as np
 def main():    
     usage = '''
 Usage: 
----------------------------------------------------------
-python %s  [-p bandPositions] [- a algorithm] [-L number of hidden neurons (2D array)]   
-[-P generate class probabilities image] [-t training fraction] [-n suppress graphics] 
-[-e epochs] [-v use validation] filename trainShapefile
+--------------------------------------
 
-bandPositions is a list, e.g., -p [1,2,4]  
+Supervised classification of multispectral images
 
-algorithm  1=MaxLike
-           2=Gausskernel
-           3=NNet(backprop)
-           4=NNet(congrad)
-           5=NNet(Kalman)
-           6=Dnn(tensorflow)
-           7=SVM
+python %s [OPTIONS] filename shapefile 
 
+Options:
+  -h            this help
+  -p  <list>    RGB band positions to be sharpened
+                (default all) e.g. -p [1,2,3]
+  -a  <int>     algorithm  1=MaxLike
+                           2=Gausskernel
+                           3=NNet(backprop)
+                           4=NNet(congrad)
+                           5=NNet(Kalman)
+                           6=Dnn(tensorflow)
+                           7=SVM
+  -e  <int>     number of epochs (default 100)
+  -t  <float>   fraction for training (default 0.67)
+  -v            use validation (reserve half of training
+                   data for validation)  
+  -P            generate class probability image (not
+                         available for MaxLike)
+  -n            suppress graphical output
+  -L  <list>    list of hidden neurons in each 
+                   hidden layer (default [10]) 
+                            
 If the input file is named 
 
          path/filenbasename.ext then
@@ -46,8 +58,10 @@ the class probabilities output file is named
          
 and the test results file is named
 
-         path/filebasename_<classifier>.tst
---------------------------------------------------------''' %sys.argv[0]
+         path/filebasename_<classifier>.tst                            
+  
+  -------------------------------------'''%sys.argv[0]
+
 
     outbuffer = 100
 

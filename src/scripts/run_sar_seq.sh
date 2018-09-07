@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Usage: 
-# sar_seq_s1.sh pattern imdir enl significance 
+# run_sar_seq.sh pattern imdir enl significance 
 #
 
 alpha="${@: -1}"

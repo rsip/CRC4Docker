@@ -14,7 +14,7 @@
 # Copyright (c) 2018 Mort Canty
 
 def call_register((fn0,fni,dims)):
-    from registersar import register
+    from auxil.registersar import register
     return register(fn0,fni,dims)
 
 def call_median_filter(pv):
@@ -220,7 +220,7 @@ def change_maps(pvarray,significance):
 def main():  
     import numpy as np
     import os, sys, time, getopt, gdal
-    from subset import subset
+    from auxil import subset
     from ipyparallel import Client
     from osgeo.gdalconst import GA_ReadOnly, GDT_Byte
     from tempfile import NamedTemporaryFile
@@ -230,15 +230,15 @@ Usage:
 
 Sequential change detection for polarimetric SAR images
 
-python %s [OPTIONS]  infiles outfile enl
+python %s [OPTIONS]  infiles* outfile enl
 
 Options:
   
   -h           this help
   -m           run 3x3 median filter on p-values prior to thresholding (e.g. for noisy satellite data)  
-  -d  dims     files are to be co-registered to a subset dims = [x0,y0,rows,cols] of the first image, otherwise
+  -d  <list>   files are to be co-registered to a subset dims = [x0,y0,rows,cols] of the first image, otherwise
                it is assumed that the images are co-registered and have identical spatial dimensions  
-  -s  signif   significance level for change detection (default 0.01)
+  -s  <float>  significance level for change detection (default 0.0001)
 
 infiles:
 
@@ -257,7 +257,7 @@ enl:
     options,args = getopt.getopt(sys.argv[1:],'hmd:s:')
     medianfilter = False
     dims = None
-    significance = 0.01
+    significance = 0.0001
     for option, value in options: 
         if option == '-h':
             print usage
@@ -286,14 +286,15 @@ enl:
     if dims is not None:
 #  images are not yet co-registered, so subset first image and register the others
         _,_,cols,rows = dims
-        fn0 = subset(fns[0],dims)
+        fn0 = subset.subset(fns[0],dims)
         args1 = [(fns[0],fns[i],dims) for i in range(1,k)]
         try:
             print ' \nattempting parallel execution of co-registration ...' 
             start1 = time.time()  
             c = Client()
             print 'available engines %s'%str(c.ids)
-            v = c[:]   
+            v = c[:]  
+            v.execute('from registersar import register') 
             fns = v.map_sync(call_register,args1)
             print 'elapsed time for co-registration: '+str(time.time()-start1) 
         except Exception as e: 

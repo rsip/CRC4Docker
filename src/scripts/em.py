@@ -98,17 +98,27 @@ def em(G,U,T0,beta,rows,cols,unfrozen=None):
                                                   
                                         
 def main():
-    usage = '''
+
+    usage = '''            
 Usage: 
----------------------------------------------------------
-python %s  [-p "bandPositions"] [-d "spatialDimensions"] 
-[-K number of clusters] [-M max scale][-m min scale] 
-[-t initial annealing temperature] [-s spatial mixing factor] 
-[-P generate class probabilities image] filename
+--------------------------------------
 
-bandPositions and spatialDimensions are lists, 
-e.g., -p [1,2,4] -d [0,0,400,400]  
+Perform Gaussian mixture clustering on multispectral imagery 
 
+python %s [OPTIONS] filename
+
+Options:
+  -h            this help
+  -p  <list>    band positions e.g. -p [1,2,3,4,5,7]
+  -d  <list>    spatial subset [x,y,width,height] 
+                              e.g. -d [0,0,200,200]
+  -K  <int>     number of clusters (default 6)
+  -M  <int>     maximum scale (default 2)
+  -m  <int>     maximum scale (default 0) 
+  -t  <float>   initial eannealing temperature (default 0.5)
+  -s  <float>   spatial mixing factor (default 0.5)  
+  -P            generate class probabilities image 
+  
 If the input file is named 
 
          path/filenbasename.ext then
@@ -120,7 +130,10 @@ The output classification file is named
 and the class probabilities output file is named
 
          path/filebasename_emprobs.ext
---------------------------------------------------------''' %sys.argv[0]
+  
+  -------------------------------------'''%sys.argv[0]   
+
+
     options, args = getopt.getopt(sys.argv[1:],'hp:d:K:M:m:t:s:P')
     pos = None
     dims = None  

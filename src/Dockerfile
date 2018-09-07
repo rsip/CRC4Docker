@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     pandoc \
     python-dev \
     python-pygments \
-    python-pip  
+    python-pip \
+    git 
 
 # ipython notebook
 RUN     pip install --upgrade pip
@@ -53,6 +54,11 @@ RUN     rm prov_means.c
 
 # scikit-learn
 #RUN     pip install -U scikit-learn
+
+# geebam
+RUN     git clone https://github.com/tracek/gee_asset_manager
+RUN     cd gee_asset_manager && pip install -e .   
+WORKDIR /home  
 
 EXPOSE 8888
 
