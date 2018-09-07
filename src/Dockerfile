@@ -88,6 +88,7 @@ RUN     pip install spectral
 
 # textbook scripts, notebooks and images
 ADD     scripts /home/scripts
+ADD     auxil /home/auxil 
 ADD     imagery_initial /home/imagery
 COPY    Chapter1.ipynb /home/Chapter1.ipynb
 COPY    Chapter2.ipynb /home/Chapter2.ipynb
