@@ -182,7 +182,7 @@ Options:
         p = plt.gca()
         p.set_title('Merge cost')
         p.set_xlabel('Custers') 
-        p.set_ylim((1,ymax))      
+        p.set_ylim((1,ymax))    
         plt.show()    
         print 'result written to: '+outfile    
         print 'elapsed time: '+str(time.time()-start)

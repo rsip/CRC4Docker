@@ -27,7 +27,7 @@ Options:
   -p  <list>    band positions e.g. -p [1,2,3,4,5,7]
   -d  <list>    spatial subset [x,y,width,height] 
                               e.g. -d [0,0,200,200]
-  -r  <int>     number of components for reconstruction 
+  -r  <int>     number of components for reconstruction (default 0)
   -n            disable graphics   
   
   -------------------------------------'''%sys.argv[0]            

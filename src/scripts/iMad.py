@@ -161,7 +161,9 @@ For ENVI files, ext1 or ext2 is the empty string.
 #      reset prov means object           
         cpm.__init__(2*bands)  
         s11 = S[0:bands,0:bands]
+        s11 = (1-lam)*s11 + lam*np.identity(bands)
         s22 = S[bands:,bands:] 
+        s22 = (1-lam)*s22 + lam*np.identity(bands)
         s12 = S[0:bands,bands:]
         s21 = S[bands:,0:bands]        
         c1 = s12*linalg.inv(s22)*s21 

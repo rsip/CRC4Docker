@@ -34,7 +34,7 @@ Options:
   -s  <int>     sample size for estimation of kernel 
                 matrix, zero for kmeans to determine
                 100 cluster centers (default)
-  -e  <int>     number of eigenvectors to keep                 
+  -e  <int>     number of eigenvectors to keep (default 10)                
   -n            disable graphics   
   
   -------------------------------------'''%sys.argv[0]               

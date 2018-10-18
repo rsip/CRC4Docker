@@ -111,7 +111,7 @@ Options:
 
    -h         this help
    -p <list>  band positions e.g. -p [1,2,3,4] 
-   -L <int>   number of hidden neurons (default 10)
+   -L <int>  number of hidden neurons (default 10)
    -n <int>   number of nnet instances (default 50)
    -e <int>   epochs for ekf training (default 3)
    
@@ -263,6 +263,7 @@ The output classification file is named
     ax.legend()
     ax.set_xlabel('number of networks')
     ax.set_ylabel('classification error')
+    plt.savefig('/home/mort/LaTeX/new projects/CRC4/Chapter7/fig7_3.eps',bbox_inches='tight')
     plt.show()
 #  classify the image           
     print 'classifying...'

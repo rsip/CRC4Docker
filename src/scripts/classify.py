@@ -206,7 +206,8 @@ and the test results file is named
             cost = np.log(result[0]) 
             costv = np.log(result[1])
             ymax = np.max(cost)
-            ymin = np.min(cost)-1
+            #ymin = np.min(cost)-1
+            ymin = 5.0
             xmax = len(cost)      
             plt.plot(range(xmax),costv,'r',range(xmax),cost,'b')
             plt.axis([0,xmax,ymin,ymax])

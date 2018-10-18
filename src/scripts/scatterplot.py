@@ -78,7 +78,7 @@ Options:
     idx = np.random.randint(0,rows*cols,samples)
     plt.plot(g1[idx],g2[idx],'.')
     if sfn is not None:
-        plt.savefig(sfn,bbox_inches='tight')
+        plt.savefig(sfn,bbox_inches='tight')  
     plt.show()
    
 if __name__ == '__main__':

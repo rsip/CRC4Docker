@@ -80,7 +80,7 @@ Options:
     G = G.ravel()
     while (delta>1.0) and (itr<100):
         print 'Clusters: %i delta: %f'%(K,delta)
-        indices =np.where(priors>0.01)[0]
+        indices = np.where(priors>0.01)[0]
         K = indices.size 
         ds = np.zeros((K,m))
         means = means[indices]

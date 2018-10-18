@@ -115,7 +115,7 @@ Options:
   -K  <int>     number of clusters (default 6)
   -M  <int>     maximum scale (default 2)
   -m  <int>     maximum scale (default 0) 
-  -t  <float>   initial eannealing temperature (default 0.5)
+  -t  <float>   initial annealing temperature (default 0.5)
   -s  <float>   spatial mixing factor (default 0.5)  
   -P            generate class probabilities image 
   

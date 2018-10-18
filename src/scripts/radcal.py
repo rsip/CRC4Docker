@@ -27,7 +27,7 @@ python %s [OPTIONS] iMadFile [fullSceneFile]
 Options:
 
    -h           this help
-   -t  <float>  P-value threshold
+   -t  <float>  P-value threshold (default 0.95)
    -d  <list>   spatial subset e.g. -d [0,0,500,500]
    -p  <list>   band positions  e.g. -d [1,2,3]
    
@@ -87,7 +87,7 @@ Note that, for ENVI format, ext is the empty string.
     e = root.find(')')
     referenceroot, targetbasename = root[b+1:e].split('-')
     referencefn = path + '/' + referenceroot + ext
-    targetfn = path + '/' + targetbasename
+    targetfn = path + '/' + targetbasename + ext
     targetroot, targetext = os.path.splitext(targetbasename)
     outfn = path + '/' + targetroot + '_norm' + targetext
     imadDataset = gdal.Open(imadfn,GA_ReadOnly)    
