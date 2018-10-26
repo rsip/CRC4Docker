@@ -36,8 +36,10 @@ RUN     sed -i "/# Configuration file for jupyter-notebook./a  \
 
 # install python environment for crc4 scripts
 RUN     apt-get install -y python-numpy python-scipy \
-         python-gdal python-matplotlib libgdal-dev gdal-bin python-shapely \
+         python-gdal  libgdal-dev gdal-bin python-shapely \
          python-opencv
+         
+RUN     pip install --upgrade matplotlib    
 
 # install mlpy (with MaximumLikelihoodC and LibSvm)
 RUN     apt-get install -y libgsl0-dev
@@ -59,6 +61,7 @@ RUN     rm prov_means.c
 RUN     git clone https://github.com/tracek/gee_asset_manager
 RUN     cd gee_asset_manager && pip install -e .   
 WORKDIR /home  
+RUN     rm -rf gee_asset_manager
 
 EXPOSE 8888
 

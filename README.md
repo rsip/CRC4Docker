@@ -11,7 +11,7 @@ On Ubuntu, for example, pull and/or run the container for the first time with
 This maps the host directory my_image_folder to the container directory /home/myimagery/ and runs the
 container in detached mode. 
 
-Point your browser to http://localhost:443 to see the Jupyter home page and open a notebook. The password is 'hobbes'.  
+Point your browser to http://localhost:443 to see the Jupyter home page and open a notebook.
 
 In order to use Earth Engine scripts,  
 you must authenticate. From the home page open a local terminal and enter
