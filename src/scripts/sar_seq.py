@@ -165,7 +165,7 @@ def PV((fns,n,cols,rows,bands)):
         detj = k1*xsi1
     elif bands==1:
         p = 1
-        detsumj = k  
+        detsumj = k+0.0 # !!! deep copy
         k -= k1
         detsumj1 = k
         detj = k1    
@@ -181,7 +181,7 @@ def PV((fns,n,cols,rows,bands)):
 #  test statistic
     lnRj = n*( p*( j*np.log(j)-(j-1)*np.log(j-1.) ) + (j-1)*logdetsumj1 + logdetj - j*logdetsumj )  
     if (bands==9) or (bands==4) or (bands==1):
-#      full quad, dual or single pol  (p = 3, 2 or 1)      
+#      full quad, dual pol or intensity (p = 3, 2 or 1)      
         f =p**2
     else:
 #      quad and dual diagonal matrix cases (f = 3 or 2, p1 = p2 (= p3) =: p = 1)

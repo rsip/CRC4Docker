@@ -25,7 +25,7 @@ python %s [OPTIONS] filename shapefile
 
 Options:
   -h            this help
-  -p  <list>    RGB band positions to be sharpened
+  -p  <list>    RGB band positions to be included
                 (default all) e.g. -p [1,2,3]
   -a  <int>     algorithm  1=MaxLike
                            2=Gausskernel

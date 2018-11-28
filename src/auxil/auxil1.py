@@ -104,7 +104,12 @@ class Cpm(object):
         self.sw = 0.0000001
          
     def update(self,Xs,Ws=None):
-        n,N = np.shape(Xs)       
+        lngth = len(np.shape(Xs))
+        if lngth==2:
+            n,N = np.shape(Xs)  
+        else:
+            N = len(Xs)  
+            n = 1   
         if Ws is None:
             Ws = np.ones(n)
         sw = ctypes.c_double(self.sw)        

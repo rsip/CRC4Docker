@@ -5,7 +5,7 @@
 #    Display a scatterplot of two ms bands      via similarity warping.
 #
 #  Usage:        
-#    python scatterplot.py [OPTIONS] filename1 filename2 band1 band2
+#    python scatterplot.py [OPTIONS] filename1 [filename2] band1 band2
 #
 #  Copyright (c) 2018 Mort Canty
 
@@ -23,7 +23,7 @@ def main():
 
 Display a scatterplot   
 
-python %s [OPTIONS] filename1 filename2 band1 band2
+python %s [OPTIONS] filename1 [filename2] band1 band2
       
 Options:
 
@@ -45,15 +45,21 @@ Options:
         elif option == '-n':
             samples = eval(value) 
         elif option == '-s':
-            sfn = value           
-    if len(args) != 4:
+            sfn = value            
+    if len(args)==4:     
+        fn1 = args[0] 
+        fn2 = args[1]  
+        b1 = eval(args[2])
+        b2 = eval(args[3])
+    elif len(args)==3:
+        fn1 = args[0] 
+        fn2 = args[0]  
+        b1 = eval(args[1])
+        b2 = eval(args[2])
+    else:
         print 'Incorrect number of arguments'
         print usage
-        sys.exit(1)      
-    fn1 = args[0] 
-    fn2 = args[1]  
-    b1 = eval(args[2])
-    b2 = eval(args[3])
+        sys.exit(1)             
     gdal.AllRegister()
     inDataset = gdal.Open(fn1,GA_ReadOnly)  
     cols = inDataset.RasterXSize
