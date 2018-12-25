@@ -5,7 +5,6 @@ Created on 21.06.2018
 '''
 import ee, time, warnings
 import ipywidgets as widgets
-import numpy as np
 from IPython.display import display
 from ipyleaflet import (Map,DrawControl,TileLayer,basemaps,basemap_to_tiles,SplitMapControl)
 from auxil.eeWishart import omnibus
@@ -109,7 +108,7 @@ w_enddate = widgets.Text(
 )
 w_median = widgets.Checkbox(
     value=True,
-    description='5x5 Median filter',
+    description='3x3 Median filter',
     disabled=False
 )
 w_significance = widgets.BoundedFloatText(

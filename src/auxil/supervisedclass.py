@@ -12,11 +12,11 @@
 import auxil1
 import numpy as np  
 import tensorflow as tf
+from tensorflow.keras import layers
 from scipy.optimize import minimize_scalar
 from mlpy import MaximumLikelihoodC, LibSvm   
 
-tf.logging.set_verbosity('ERROR')
-   
+tf.logging.set_verbosity('ERROR')   
 
 class Maxlike(MaximumLikelihoodC):
        
@@ -118,9 +118,9 @@ class Gausskernel(object):
 
 class Ffn(object):
  
-    def __init__(self,Gs,ls,L,epochs,validate): 
+    def __init__(self,Gs,ls,Ls,epochs,validate): 
 #      setup the network architecture        
-        self._L = L[0] 
+        self._L = Ls[0] 
         self._m,self._N = Gs.shape 
         self._K = ls.shape[1]
         self._epochs = epochs
@@ -212,8 +212,8 @@ class Ffn(object):
     
 class Ffnbp(Ffn):
     
-    def __init__(self,Gs,ls,L,epochs=100,valid=False):
-        Ffn.__init__(self,Gs,ls,L,epochs,valid)
+    def __init__(self,Gs,ls,Ls,epochs=100,valid=False):
+        Ffn.__init__(self,Gs,ls,Ls,epochs,valid)
            
     def train(self):
         eta = 0.01
@@ -257,8 +257,8 @@ class Ffnbp(Ffn):
     
 class Ffncg(Ffn):
     
-    def __init__(self,Gs,ls,L,epochs=100,validate=False):
-        Ffn.__init__(self,Gs,ls,L,epochs,validate)
+    def __init__(self,Gs,ls,Ls,epochs=100,validate=False):
+        Ffn.__init__(self,Gs,ls,Ls,epochs,validate)
     
     def gradient(self):
 #      gradient of cross entropy wrt synaptic weights          
@@ -369,8 +369,8 @@ class Ffncg(Ffn):
         
 class Ffnekf(Ffn):
     
-    def __init__(self,Gs,ls,L,epochs=10,validate=False):
-        Ffn.__init__(self,Gs,ls,L,epochs,validate)
+    def __init__(self,Gs,ls,Ls,epochs=10,validate=False):
+        Ffn.__init__(self,Gs,ls,Ls,epochs,validate)
 #      weight covariance matrices
         self._Sh = np.zeros((self._N+1,self._N+1,self._L)) 
         for i in range(self._L):
@@ -442,7 +442,7 @@ class Ffnekf(Ffn):
     
 class Dnn_learn(object):    
     '''High-level Dnn classifier, now deprecated '''
-    def __init__(self,Gs,ls,L,epochs=1000):
+    def __init__(self,Gs,ls,Ls,epochs=1000):
 #      setup the network architecture, Geron, p.164     
         self._Gs = Gs
         self._y = np.argmax(ls,1)
@@ -451,7 +451,7 @@ class Dnn_learn(object):
         feature_cols = tf.contrib.learn. \
         infer_real_valued_columns_from_input(self._Gs)
         dnn = tf.contrib.learn.DNNClassifier(   
-                hidden_units=L, 
+                hidden_units=Ls, 
                 n_classes=n_classes, 
                 feature_columns=feature_cols)
         self._dnn=tf.contrib.learn.SKCompat(dnn)
@@ -480,7 +480,7 @@ class Dnn_learn(object):
     
 class Dnn_core(object):    
     '''High-level core TensorFlow Dnn classifier'''
-    def __init__(self,Gs,ls,L,epochs=100):
+    def __init__(self,Gs,ls,Ls,epochs=100):
 #      setup the network architecture  
         self._Gs = Gs   
         n_classes = ls.shape[1]
@@ -500,7 +500,7 @@ class Dnn_core(object):
                            batch_size = Gs.shape[0])
 #      instantiate the classifier                    
         self._dnn = tf.estimator.DNNClassifier(   
-                hidden_units=L, 
+                hidden_units=Ls, 
                 n_classes=n_classes,
                 feature_columns=feature_cols)
                     
@@ -537,7 +537,53 @@ class Dnn_core(object):
         classes = np.asarray(classes,np.int16)
         labels = np.argmax(np.transpose(ls),axis=0)+1
         misscls = np.where(classes-labels)[0]
-        return len(misscls)/float(m)                      
+        return len(misscls)/float(m)               
+    
+class Dnn_keras(object):    
+    '''High-level TensorFlow (keras) Dnn classifier'''
+    def __init__(self,Gs,ls,Ls,epochs=100):
+#      setup the network architecture  
+        self._Gs = Gs   
+        n_classes = ls.shape[1]
+        self._labels = ls
+        self._epochs = epochs
+        self._dnn = tf.keras.Sequential()
+#      hidden layers        
+        for L in Ls:
+            self._dnn \
+             .add(layers.Dense(L,activation='relu'))
+#      output layer
+        self._dnn \
+          .add(layers.Dense(n_classes,
+                            activation='softmax'))       
+#      initialize                             
+        self._dnn.compile(
+     optimizer=tf.train.GradientDescentOptimizer(0.01),
+     loss='categorical_crossentropy')
+        
+    def train(self):
+        try:           
+            self._dnn.fit(self._Gs,self._labels,
+                        epochs=self._epochs,verbose=0)
+            return True 
+        except Exception as e:
+            print 'Error: %s'%e 
+            return None             
+        
+    def classify(self,Gs):     
+#      predict new data                       
+        Ms = self._dnn.predict(Gs)
+        cls = np.argmax(Ms,1)+1
+        return (cls,Ms)
+
+    def test(self,Gs,ls):
+        m = np.shape(Gs)[0]
+        classes, _ = self.classify(Gs)
+        classes = np.asarray(classes,np.int16)
+        labels = np.argmax(np.transpose(ls),axis=0)+1
+        misscls = np.where(classes-labels)[0]
+        return len(misscls)/float(m)  
+
 
 class Svm(object):   
       

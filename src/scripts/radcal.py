@@ -3,7 +3,7 @@
 #  Name:     radcal.py
 #  Purpose:  Automatic radiometric normalization
 #  Usage:             
-#       python radcal.py  [-p 'bandPositions' -d 'spatialDimensions' -t NoChangeProbThresh] imadFile [FullSceneFile] 
+#       python radcal.py  [OPTIONS] imadFile [FullSceneFile] 
 #
 #  Copyright (c) 2018, Mort Canty
 

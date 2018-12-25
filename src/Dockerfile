@@ -55,6 +55,7 @@ WORKDIR /home
 RUN     rm -rf gee_asset_manager
 
 EXPOSE 8888
+EXPOSE 6006
 
 # install auxil
 COPY    dist/auxil-1.0.tar.gz /home/auxil-1.0.tar.gz

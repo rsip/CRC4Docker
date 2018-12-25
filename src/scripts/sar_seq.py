@@ -214,7 +214,7 @@ def change_maps(pvarray,significance):
             cmap[idx] = j+1 
             bmap[idx,j] = 255 
             if ell==0:
-                smap[idx] = j+1             
+                smap[idx] = j+1    
     return (cmap,smap,fmap,bmap)
                        
 def main():  
@@ -313,6 +313,16 @@ enl:
     print 'number of images: %i'%k
     print 'equivalent number of looks: %f'%n
     print 'significance level: %f'%significance
+    if bands==9:
+        print 'Quad ploarization'
+    elif bands==4:
+        print 'Dual polarizaton'
+    elif bands==3:
+        print 'Quad polarization, diagonal only'
+    elif bands==2:
+        print 'Dual polarization, diagonal only'
+    else:
+        print 'Intensity image'
 #  output file
     path = os.path.abspath(fns[0])    
     dirn = os.path.dirname(path)

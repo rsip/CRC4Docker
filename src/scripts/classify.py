@@ -191,7 +191,8 @@ and the test results file is named
         classifier = sc.Ffnekf(Xstrn,Lstrn,L,epochs,validation)    
     elif trainalg == 6:
 #        classifier = sc.Dnn_learn(Xstrn,Lstrn,L,epochs) 
-        classifier = sc.Dnn_core(Xstrn,Lstrn,L,epochs)
+#        classifier = sc.Dnn_core(Xstrn,Lstrn,L,epochs)
+        classifier = sc.Dnn_keras(Xstrn,Lstrn,L,epochs)
     elif trainalg == 7:
         classifier = sc.Svm(Xstrn,Lstrn)         
 #  train it            
@@ -224,7 +225,7 @@ and the test results file is named
                 tile[:,j] = 2*(tile[:,j]-minx[j])/(maxx[j]-minx[j]) - 1.0               
             cls, Ms = classifier.classify(tile)  
             outBand.WriteArray(np.reshape(cls,(outbuffer,cols)),0,row*outbuffer)
-            if probfile:
+            if probfile and Ms is not None:
                 Ms = np.byte(Ms*255)
                 for k in range(K):
                     probBands[k].WriteArray(np.reshape(Ms[:,k],(outbuffer,cols)),0,row*outbuffer)
