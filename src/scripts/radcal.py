@@ -29,7 +29,7 @@ Options:
    -h           this help
    -t  <float>  P-value threshold (default 0.95)
    -d  <list>   spatial subset e.g. -d [0,0,500,500]
-   -p  <list>   band positions  e.g. -d [1,2,3]
+   -p  <list>   band positions  e.g. -p [1,2,3]
    
 Spatial subset MUST match that of iMadFile
 Spectral dimension of fullSceneFile, if present,

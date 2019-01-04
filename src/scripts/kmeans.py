@@ -69,7 +69,7 @@ Options:
     print 'Input %s'%infile
     print 'Number of clusters %i'%K
     start = time.time()               
-    G = np.zeros((rows*cols,len(pos))) 
+    G = np.zeros((rows*cols,bands)) 
     k = 0                                   
     for b in pos:
         band = inDataset.GetRasterBand(b)

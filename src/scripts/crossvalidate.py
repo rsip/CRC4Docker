@@ -136,7 +136,7 @@ def crossvalidate((Gstrn,lstrn,Gstst,lstst,
     elif trainalg == 5:
         classifier = sc.Ffnekf(Gstrn,lstrn,L,epochs)
     elif trainalg == 6:
-        classifier = sc.Dnn_core(Gstrn,lstrn,L,epochs)
+        classifier = sc.Dnn_keras(Gstrn,lstrn,L,epochs)
     elif trainalg == 7:
         classifier = sc.Svm(Gstrn,lstrn)       
     if classifier.train() is not None:

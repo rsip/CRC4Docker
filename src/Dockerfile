@@ -5,7 +5,7 @@
 FROM     debian:jessie  
            
 MAINTAINER Mort Canty "mort.canty@gmail.com"
-ENV     REFRESHED_AT 2018-11-11a
+ENV     REFRESHED_AT 2018-12-25
 
 RUN apt-get update && apt-get install -y \
     python \
@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
 RUN     pip install --upgrade pip
 COPY    requirements.txt /home
 RUN     pip install -r /home/requirements.txt
+RUN     rm /home/requirements.txt
 
 RUN apt-get install -y \
     python-gdal \
@@ -47,12 +48,6 @@ WORKDIR /home
 RUN     gcc -shared -Wall -g -o libprov_means.so -fPIC prov_means.c
 RUN     cp libprov_means.so /usr/lib/libprov_means.so
 RUN     rm prov_means.c
-
-# geebam
-RUN     git clone https://github.com/tracek/gee_asset_manager
-RUN     cd gee_asset_manager && pip install -e .   
-WORKDIR /home  
-RUN     rm -rf gee_asset_manager
 
 EXPOSE 8888
 EXPOSE 6006
