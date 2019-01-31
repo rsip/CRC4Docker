@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 #******************************************************************************
-#  Name:     sar_seq.py
+#  Name:     sar_seqQ.py
 #  Purpose:  Perform sequential change detection on multi-temporal, polarimetric SAR imagery 
 #            Determine time(s) at which change occurred, see
 #            Condradsen et al. (2016) IEEE Transactions on Geoscience and Remote Sensing,
 #            Vol. 54 No. 5 pp. 3007-3024
+#            Tests based both upon Rj and Q = Prod(Rj)   
 #
 #  Usage:             
-#    python sar_seq.py [OPTIONS] filenamelist enl
+#    python sar_seqQ.py [OPTIONS] filenamelist enl
 #
 # MIT License
 # 
@@ -195,7 +196,7 @@ def PV((fns,n,cols,rows,bands)):
 
 def change_maps(pvarray,significance):
     import numpy as np
-    k = pvarray.shape[0]+1
+    k = pvarray.shape[0]
     n = pvarray.shape[2]
 #  map of most recent change occurrences
     cmap = np.zeros(n,dtype=np.byte)    
@@ -205,17 +206,36 @@ def change_maps(pvarray,significance):
     fmap = np.zeros(n,dtype=np.byte)
 #  bitemporal change maps
     bmap = np.zeros((n,k-1),dtype=np.byte)  
-    for ell in range(k-1):
+    for ell in range(k-1):        
+        pvQ = pvarray[ell,k-1,:]          
         for j in range(ell,k-1):
             pv = pvarray[ell,j,:]
-            idx = np.where((pv<=significance)\
-                          &(cmap==ell))
+            idx = np.where((pv<=significance)&(pvQ<=significance)&(cmap==ell))
             fmap[idx] += 1 
             cmap[idx] = j+1 
             bmap[idx,j] = 255 
             if ell==0:
                 smap[idx] = j+1    
     return (cmap,smap,fmap,bmap)
+
+def getpvQ(lnQ,bands,k,n):
+    import math
+    from scipy import stats
+#  test statistic 
+    if (bands==9) or (bands==4) or (bands==1):
+#      full quad, dual pol or intensity (p = 3, 2 or 1)   
+        p = math.sqrt(bands)   
+        f =(k-1)*p**2
+        rho = 1.0 - (2*p**2-1)*(k/n-1.0/(n*k))/(6.0*(k-1)*p)
+        omega2 = p**2*(p**2-1)*(k/n**2 - 1.0/(n*n*k*k))/(24.0*rho**2) - p**2*(k-1)*(1.0-1.0/rho)**2/4.0
+    elif bands==2 or bands==3:
+#      quad and dual diagonal matrix cases, use first order approx 
+        f = (k-1)*bands 
+        rho = 1.0
+        omega2 = 0.0    
+#  return p-value  
+    Z = -2*rho*lnQ
+    return 1.0-((1.-omega2)*stats.chi2.cdf(Z,[f])+omega2*stats.chi2.cdf(Z,[f+4]))   
                        
 def main():  
     import numpy as np
@@ -234,10 +254,10 @@ python %s [OPTIONS]  infiles* outfile enl
 
 Options:
   
-  -h           this help
-  -m           run 3x3 median filter on p-values prior to thresholding (e.g. for noisy satellite data)  
+  -h           this help 
   -d  <list>   files are to be co-registered to a subset dims = [x0,y0,rows,cols] of the first image, otherwise
                it is assumed that the images are co-registered and have identical spatial dimensions  
+  -m           run 3x3 median filter over p-values   
   -s  <float>  significance level for change detection (default 0.0001)
 
 infiles:
@@ -255,15 +275,15 @@ enl:
 -------------------------------------------------'''%sys.argv[0]
 
     options,args = getopt.getopt(sys.argv[1:],'hmd:s:')
-    medianfilter = False
     dims = None
     significance = 0.0001
+    medianfilter = False
     for option, value in options: 
         if option == '-h':
             print usage
             return 
         elif option == '-m':
-            medianfilter = True 
+            medianfilter = True
         elif option == '-d':
             dims = eval(value)
         elif option == '-s':
@@ -329,8 +349,7 @@ enl:
     outfn = dirn + '/' + outfn 
 #  create temporary, memory-mapped array of change indices p(Ri<ri)
     mm = NamedTemporaryFile()
-    pvarray = np.memmap(mm.name,dtype=np.float64,mode='w+',shape=(k-1,k-1,rows*cols))  
-    lnQs = np.zeros(k-1)
+    pvarray = np.memmap(mm.name,dtype=np.float64,mode='w+',shape=(k,k,rows*cols))  
     print 'pre-calculating Rj and p-values ...' 
     start1 = time.time() 
     try:
@@ -346,12 +365,14 @@ enl:
             args1 = [(fns[i:j+2],n,cols,rows,bands) for j in range(i,k-1)]         
             results = v.map_sync(PV,args1) # list of tuples (p-value, lnRj)
             pvs = [result[0] for result in results] 
-            lnRjs = np.array([result[1] for result in results]) 
-            lnQs[i] = np.sum(lnRjs) 
             if medianfilter:
-                pvs = v.map_sync(call_median_filter,pvs)           
+                pvs = v.map_sync(call_median_filter,pvs)
+            lnRjs = np.array([result[1] for result in results]) 
+            lnQ = np.sum(lnRjs,axis=0)            
+            pvQ = getpvQ(lnQ,bands,k-i,n)       
             for j in range(i,k-1):
                 pvarray[i,j,:] = pvs[j-i].ravel() 
+            pvarray[i,k-1,:] = pvQ.ravel()    
     except Exception as e: 
         print '%s \nfailed, so running sequential calculation ...'%e  
         print 'ell= ',
@@ -361,13 +382,15 @@ enl:
             sys.stdout.flush()             
             args1 = [(fns[i:j+2],n,cols,rows,bands) for j in range(i,k-1)]                         
             results = map(PV,args1)  # list of tuples (p-value, lnRj)
-            pvs = [result[0] for result in results]  
-            lnRjs = np.array([result[1] for result in results]) 
-            lnQs[i] = np.sum(lnRjs)           
+            pvs = [result[0] for result in results] 
             if medianfilter:
-                pvs = map(call_median_filter,pvs)
+                pvs = map(call_median_filter,pvs) 
+            lnRjs = np.array([result[1] for result in results]) 
+            lnQ = np.sum(lnRjs)              
+            pvQ = getpvQ(lnQ,bands,k-i,n)                   
             for j in range(i,k-1):
                 pvarray[i,j,:] = pvs[j-i].ravel() 
+            pvarray[i,k-1,:] = pvQ.ravel()  
     print '\nelapsed time for p-value calculation: '+str(time.time()-start1)    
     cmap,smap,fmap,bmap = change_maps(pvarray,significance)
 #  write to file system    

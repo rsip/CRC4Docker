@@ -13,5 +13,5 @@ fns=$(ls -l $imdir | grep $1 | \
      grep -v 'mmse' | grep -v 'gamma' | \
      grep -v 'warp' | grep -v 'sub' |  awk '{print $9}')
      
-python scripts/sar_seq.py -m -s $alpha  \
-                     ${fns//$1/$imdir$1} sarseq.tif $enl 
+python scripts/sar_seqQ.py -m -s $alpha  \
+                     ${fns//$1/$imdir$1} sarseqQ.tif $enl 
